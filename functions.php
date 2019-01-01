@@ -10,6 +10,7 @@
 # the default filter is gform_review_page. 
 # You can specify the form you want to apply this filter for by adding the ID of the form in the end; e.g. gform_review_page_2
 # Mostly you want to do this or else you'll get a review page for every form on the site.
+# The code used in this tutorial is the actual code used on the link provided in the blog post on https://hansswolfs.be/hoe-maak-je-een-samenvattingspagina-in-gravity-forms
 
 add_filter( 'gform_review_page_2', 'hs_add_review_page', 10, 5 );
 
@@ -25,6 +26,9 @@ function hs_add_review_page( $review_page, $form, $entry ) {
   # Tip also is to give the variables a clear name. I chose for this set up:
   # f = field, cp/d1/d2 the different sections on the form and then the field identifier
   # the :1.3, :3, ... are the field shortcodes. You can get them by entering the needed fields on a GF form's confirmation page.
+	
+	# On the first page of the form, general data is collected about the person filling in the application.
+	# Depending on how many persons they choose, the next page is formed and there the application's names and other details are filled in.
   
 	$f_cp_voornaam = GFCommon::replace_variables( '{:1.3}', $form, $entry );
 	$f_cp_achternaam = GFCommon::replace_variables( '{:1.6}', $form, $entry );
@@ -68,6 +72,10 @@ function hs_add_review_page( $review_page, $form, $entry ) {
 	$f_d6_achternaam = GFCommon::replace_variables( '{:41.6}', $form, $entry );
 	$f_d6_geslacht = GFCommon::replace_variables( '{:42}', $form, $entry );
 	$f_d6_geboortedatum = GFCommon::replace_variables( '{:44}', $form, $entry );
+	
+	# After you collected all the fields in variables, it's time to create the output of the page with all necessary divs and css-classes.
+	# In the end, they need to be merged into 1 variable that's outputted by the function.
+	# As you can see, you can use all kinds of PHP functions (like the strpos function) to make sure all the necessary data is displayed.
 
 	$o_cp = '<div class="o-cp o-block"><h2>Contactpersoon</h2><p><span class="o-titel">Naam: </span>' . $f_cp_voornaam . ' ' . $f_cp_achternaam .
 	'<br /><span class="o-titel">Email: </span>' . $f_cp_email .
@@ -122,7 +130,10 @@ function hs_add_review_page( $review_page, $form, $entry ) {
 		'<br /><span class="o-titel">Geboortedatum: </span>' . $f_d6_geboortedatum . '</p>'; }
 	
 	$o_deelnemers = $o_deelnemers . '<p><input type=\'button\' id=\'gform_previous_button_2_53\' class=\'gform_previous_button button\' value=\'Deelnemers aanpassen\'  onclick=\'jQuery("#gform_target_page_number_2").val("2");  jQuery("#gform_2").trigger("submit",[true]); \' onkeypress=\'if( event.keyCode == 13 ){ jQuery("#gform_target_page_number_2").val("2");  jQuery("#gform_2").trigger("submit",[true]); } \' />' . '</div>';
-	// Populate the review page
+	
+	# The above code that defines the input button, is retrieved from the form itself and makes a shortcut button to one of the relevant pages on the form.
+	
+	# Eventually you need to populate the review page. Combine all the variables you filled earlier into 1 single variable that's returned.
 	$review_page['content'] = $o_cp . $o_deelnemers;
  
 	return $review_page;
